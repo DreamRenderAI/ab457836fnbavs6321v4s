@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Roblox Image Uploader</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; text-align: center; padding: 50px; }
+    input, button { padding: 10px; font-size: 16px; margin: 10px; }
+    .result { margin-top: 20px; font-size: 18px; }
+    a { color: #4af; }
+  </style>
+</head>
+<body>
+  <h1>🚀 Roblox Image Uploader</h1>
+  <p>Paste an image URL and upload as Decal</p>
+  <input id="url" type="text" placeholder="Image URL" size="50">
+  <input id="name" type="text" placeholder="Name (optional)" size="20">
+  <input id="desc" type="text" placeholder="Description (optional)" size="30">
+  <br>
+  <button onclick="upload()">Upload</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    async function upload() {
+      const url = document.getElementById("url").value;
+      const name = document.getElementById("name").value;
+      const desc = document.getElementById("desc").value;
+      if (!url) return alert("Enter an image URL!");
+
+      document.getElementById("result").textContent = "Uploading...";
+
+      try {
+        const res = await fetch(`/api/image?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name)}&desc=${encodeURIComponent(desc)}`);
+        const data = await res.json();
+        if (data.assetId) {
+          document.getElementById("result").innerHTML = 
+            `✅ Uploaded! Asset ID: <b>${data.assetId}</b><br>` +
+            `<a href="${data.assetUrl}" target="_blank">View on Roblox</a>`;
+        } else {
+          document.getElementById("result").textContent = "❌ Error: " + JSON.stringify(data);
+        }
+      } catch (err) {
+        document.getElementById("result").textContent = "❌ Upload failed: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
